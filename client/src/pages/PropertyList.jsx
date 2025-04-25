@@ -1,9 +1,10 @@
 import "../styles/List.scss";
 import { useDispatch, useSelector } from "react-redux";
 import Navbar from "../components/Navbar";
-import ListingCard from "../components/ListingCard";
 import { useEffect, useState } from "react";
 import { setPropertyList } from "../redux/state";
+// import ListingCard from "../components/ListingCard";
+import PropertyCard from "../components/PropertyCard";
 import Loader from "../components/Loader";
 import Footer from "../components/Footer"
 
@@ -50,7 +51,7 @@ const PropertyList = () => {
             price,
             booking = false,
           }) => (
-            <ListingCard
+            <PropertyCard
               listingId={_id}
               creator={creator}
               listingPhotoPaths={listingPhotoPaths}

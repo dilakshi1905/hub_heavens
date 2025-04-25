@@ -4,13 +4,13 @@ import {
   ArrowForwardIos,
   ArrowBackIosNew,
   Favorite,
-  DeleteForever,
+  Delete as DeleteIcon,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { setWishList } from "../redux/state";
 
-const ListingCard = ({
+const PropertyCard = ({
   listingId,
   creator,
   listingPhotoPaths,
@@ -24,6 +24,7 @@ const ListingCard = ({
   endDate,
   totalPrice,
   booking,
+  onDelete, // optional callback to update parent state
 }) => {
   /* SLIDER FOR IMAGES */
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -61,32 +62,29 @@ const ListingCard = ({
       );
       const data = await response.json();
       dispatch(setWishList(data.wishList));
-    } else {
-      return;
     }
   };
 
-  /* DELETE BOOKING */
-  const deleteBooking = async () => {
-    if (window.confirm("Are you sure you want to delete this booking?")) {
-      try {
-        const response = await fetch(
-          `http://localhost:3001/bookings/delete/${listingId}`,
-          {
-            method: "DELETE",
-          }
-        );
-        const data = await response.json();
-        if (response.ok) {
-          alert("Booking deleted successfully!");
-          navigate("/"); // Navigate to home page or another route after deletion
-        } else {
-          alert(data.message || "Failed to delete booking");
-        }
-      } catch (err) {
-        alert("Error occurred while deleting the booking");
-        console.log(err);
+  /* DELETE PROPERTY */
+  const isOwner = user?._id === creator._id;
+  const handleDelete = async (e) => {
+    e.stopPropagation();
+    if (!window.confirm("Are you sure you want to delete this property?")) return;
+    try {
+      const res = await fetch(
+        `http://localhost:3001/properties/${listingId}`,
+        { method: "DELETE" }
+      );
+      if (res.ok) {
+        // Optionally call parent callback
+        onDelete && onDelete(listingId);
+        // Or navigate away
+        navigate("/");
+      } else {
+        console.error("Failed to delete property");
       }
+    } catch (err) {
+      console.error("Error deleting property:", err);
     }
   };
 
@@ -169,21 +167,16 @@ const ListingCard = ({
         )}
       </button>
 
-      {/* Only show delete button for the owner of the booking */}
-      {user?._id === creator._id && (
+      {isOwner && (
         <button
-          className="delete-booking"
-          onClick={(e) => {
-            e.stopPropagation();
-            deleteBooking();
-          }}
+          className="delete-btn"
+          onClick={handleDelete}
         >
-          <DeleteForever sx={{ color: "red" }} />
-          Delete Booking
+          <DeleteIcon />
         </button>
       )}
     </div>
   );
 };
 
-export default ListingCard;
+export default PropertyCard;

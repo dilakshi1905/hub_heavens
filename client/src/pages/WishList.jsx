@@ -1,7 +1,7 @@
 import "../styles/List.scss";
 import { useSelector } from "react-redux";
 import Navbar from "../components/Navbar";
-import ListingCard from "../components/ListingCard";
+import ListingCard from "../components/Card";
 import Footer from "../components/Footer"
 
 const WishList = () => {

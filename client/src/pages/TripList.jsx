@@ -4,8 +4,8 @@ import Loader from "../components/Loader";
 import Navbar from "../components/Navbar";
 import { useDispatch, useSelector } from "react-redux";
 import { setTripList } from "../redux/state";
-import ListingCard from "../components/ListingCard";
-import Footer from "../components/Footer"
+import TripCard from "../components/TripCard";
+import Footer from "../components/Footer";
 
 const TripList = () => {
   const [loading, setLoading] = useState(true);
@@ -42,21 +42,34 @@ const TripList = () => {
       <Navbar />
       <h1 className="title-list">Your Trip List</h1>
       <div className="list">
-        {tripList?.map(({ listingId, hostId, startDate, endDate, totalPrice, booking=true }) => (
-          <ListingCard
-            listingId={listingId._id}
-            creator={hostId._id}
-            listingPhotoPaths={listingId.listingPhotoPaths}
-            city={listingId.city}
-            province={listingId.province}
-            country={listingId.country}
-            category={listingId.category}
-            startDate={startDate}
-            endDate={endDate}
-            totalPrice={totalPrice}
-            booking={booking}
-          />
-        ))}
+        {tripList?.map(
+          ({
+            _id: bookingId,
+            listingId,
+            hostId,
+            startDate,
+            endDate,
+            totalPrice,
+          }) => (
+            <TripCard
+              key={bookingId}
+              bookingId={bookingId}
+              listingId={listingId._id}
+              creator={hostId._id}
+              listingPhotoPaths={listingId.listingPhotoPaths}
+              city={listingId.city}
+              province={listingId.province}
+              country={listingId.country}
+              category={listingId.category}
+              type={listingId.type}
+              price={listingId.price}
+              startDate={startDate}
+              endDate={endDate}
+              totalPrice={totalPrice}
+              booking={true}
+            />
+          )
+        )}
       </div>
       <Footer />
     </>

@@ -4,7 +4,6 @@ import {
   ArrowForwardIos,
   ArrowBackIosNew,
   Favorite,
-  DeleteForever,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
@@ -50,44 +49,18 @@ const ListingCard = ({
 
   const patchWishList = async () => {
     if (user?._id !== creator._id) {
-      const response = await fetch(
-        `http://localhost:3001/users/${user?._id}/${listingId}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      const data = await response.json();
-      dispatch(setWishList(data.wishList));
-    } else {
-      return;
-    }
-  };
-
-  /* DELETE BOOKING */
-  const deleteBooking = async () => {
-    if (window.confirm("Are you sure you want to delete this booking?")) {
-      try {
-        const response = await fetch(
-          `http://localhost:3001/bookings/delete/${listingId}`,
-          {
-            method: "DELETE",
-          }
-        );
-        const data = await response.json();
-        if (response.ok) {
-          alert("Booking deleted successfully!");
-          navigate("/"); // Navigate to home page or another route after deletion
-        } else {
-          alert(data.message || "Failed to delete booking");
-        }
-      } catch (err) {
-        alert("Error occurred while deleting the booking");
-        console.log(err);
+    const response = await fetch(
+      `http://localhost:3001/users/${user?._id}/${listingId}`,
+      {
+        method: "PATCH",
+        header: {
+          "Content-Type": "application/json",
+        },
       }
-    }
+    );
+    const data = await response.json();
+    dispatch(setWishList(data.wishList));
+  } else { return }
   };
 
   return (
@@ -168,20 +141,6 @@ const ListingCard = ({
           <Favorite sx={{ color: "white" }} />
         )}
       </button>
-
-      {/* Only show delete button for the owner of the booking */}
-      {user?._id === creator._id && (
-        <button
-          className="delete-booking"
-          onClick={(e) => {
-            e.stopPropagation();
-            deleteBooking();
-          }}
-        >
-          <DeleteForever sx={{ color: "red" }} />
-          Delete Booking
-        </button>
-      )}
     </div>
   );
 };

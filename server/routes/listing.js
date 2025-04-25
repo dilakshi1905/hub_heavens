@@ -135,4 +135,30 @@ router.get("/:listingId", async (req, res) => {
   }
 })
 
+// Delete a listing
+router.delete('/:id', async (req, res) => {
+  try {
+    const deletedListing = await Listing.findByIdAndDelete(req.params.id);
+    if (!deletedListing) return res.status(404).json({ message: 'Listing not found' });
+    res.status(200).json({ message: 'Listing deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Update a listing
+router.put('/:id', async (req, res) => {
+  try {
+    const updatedListing = await Listing.findByIdAndUpdate(
+      req.params.id,
+      { $set: req.body },
+      { new: true }
+    );
+    if (!updatedListing) return res.status(404).json({ message: 'Listing not found' });
+    res.status(200).json(updatedListing);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 module.exports = router

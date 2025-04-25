@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { setWishList } from "../redux/state";
 
-const ListingCard = ({
+const TripCard = ({
   listingId,
   creator,
   listingPhotoPaths,
@@ -23,10 +23,11 @@ const ListingCard = ({
   startDate,
   endDate,
   totalPrice,
-  booking,
+  bookingId, // ✅ receive booking ID
 }) => {
-  /* SLIDER FOR IMAGES */
   const [currentIndex, setCurrentIndex] = useState(0);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const goToPrevSlide = () => {
     setCurrentIndex(
@@ -39,10 +40,6 @@ const ListingCard = ({
     setCurrentIndex((prevIndex) => (prevIndex + 1) % listingPhotoPaths.length);
   };
 
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-
-  /* ADD TO WISHLIST */
   const user = useSelector((state) => state.user);
   const wishList = user?.wishList || [];
 
@@ -61,17 +58,14 @@ const ListingCard = ({
       );
       const data = await response.json();
       dispatch(setWishList(data.wishList));
-    } else {
-      return;
     }
   };
 
-  /* DELETE BOOKING */
   const deleteBooking = async () => {
     if (window.confirm("Are you sure you want to delete this booking?")) {
       try {
         const response = await fetch(
-          `http://localhost:3001/bookings/delete/${listingId}`,
+          `http://localhost:3001/bookings/delete/${bookingId}`,
           {
             method: "DELETE",
           }
@@ -79,7 +73,7 @@ const ListingCard = ({
         const data = await response.json();
         if (response.ok) {
           alert("Booking deleted successfully!");
-          navigate("/"); // Navigate to home page or another route after deletion
+          navigate("/"); // or reload / refresh if needed
         } else {
           alert(data.message || "Failed to delete booking");
         }
@@ -136,23 +130,12 @@ const ListingCard = ({
       </h3>
       <p>{category}</p>
 
-      {!booking ? (
-        <>
-          <p>{type}</p>
-          <p>
-            <span>Rs{price}</span> per night
-          </p>
-        </>
-      ) : (
-        <>
-          <p>
-            {startDate} - {endDate}
-          </p>
-          <p>
-            <span>Rs{totalPrice}</span> total
-          </p>
-        </>
-      )}
+      <p>
+        {startDate} - {endDate}
+      </p>
+      <p>
+        <span>Rs{totalPrice}</span> total
+      </p>
 
       <button
         className="favorite"
@@ -169,21 +152,18 @@ const ListingCard = ({
         )}
       </button>
 
-      {/* Only show delete button for the owner of the booking */}
-      {user?._id === creator._id && (
-        <button
-          className="delete-booking"
-          onClick={(e) => {
-            e.stopPropagation();
-            deleteBooking();
-          }}
-        >
-          <DeleteForever sx={{ color: "red" }} />
-          Delete Booking
-        </button>
-      )}
+      <button
+        className="delete-booking"
+        onClick={(e) => {
+          e.stopPropagation();
+          deleteBooking();
+        }}
+      >
+        <DeleteForever sx={{ color: "red" }} />
+        Delete Booking
+      </button>
     </div>
   );
 };
 
-export default ListingCard;
+export default TripCard;
